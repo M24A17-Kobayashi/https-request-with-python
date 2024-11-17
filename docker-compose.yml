@@ -1,0 +1,11 @@
+# docker-compose.prod.yml
+version: '3'
+services:
+  https-request:
+    restart: always
+    build: .
+    container_name: 'https-request'
+    working_dir: '/root/'
+    tty: true
+    volumes:
+      - ./opt:/root/opt
