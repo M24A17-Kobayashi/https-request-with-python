@@ -21,3 +21,4 @@ RUN python -m pip install matplotlib
 RUN python -m pip install beautifulsoup4
 RUN python -m pip install requests
 RUN python -m pip install python-dotenv
+RUN python -m pip install icecream
