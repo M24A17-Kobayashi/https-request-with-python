@@ -7,11 +7,13 @@ def main():
     ave_list=[]
     #　ファイル名の読み込み
     tdhkn_list=get_tdhkn()
-    name_list = create_file_name(tdhkn_list)
+    name_list1 = create_file_name1(tdhkn_list)
 
-    for html_name in name_list:
+    for html_name in name_list1:
         ave_list.append(extract_ave(html_name))
-    print(ave_list)
+        top3_list = create_file_name2(html_name)
+        for top3 in top3_list:
+            extract_ave(top3)
 
 
 
@@ -24,11 +26,17 @@ def get_tdhkn():
         tdhkn_list = [s.rstrip() for s in f.readlines()]
     return tdhkn_list
 
-def create_file_name(tdhkn_list):
+def create_file_name1(tdhkn_list):
     name_list=[]
     for line in tdhkn_list:
         i,tdhkn_kanji,tdhkn = line.split("\t")
         name_list.append(HTML_PATH+str(i)+"_"+str(tdhkn)+".html")
+    return name_list
+
+def create_file_name2(html_name):
+    name_list=[]
+    for i in range(1,4):
+        name_list.append(html_name[:-5]+"_"+str(i)+"_of_3.html")
     return name_list
 
 def extract_ave(html_name):
@@ -54,8 +62,8 @@ def extract_ave(html_name):
                 ave_download_value = matchs[1].group(1)
                 ave_upload_value = matchs[2].group(1)
                 print(f"平均Ping値: {ave_ping_value} ms")
-                print(f"平均ダウンロード速度: {ave_download_value} ms")
-                print(f"平均アップロード速度: {ave_upload_value} ms")
+                print(f"平均ダウンロード速度: {ave_download_value} Mbps")
+                print(f"平均アップロード速度: {ave_upload_value} Mbps")
                 ave["ave_ping"]=ave_ping_value
                 ave["ave_download"]=ave_download_value
                 ave["ave_upload"]=ave_upload_value
