@@ -2,35 +2,44 @@ from config import *
 import bs4
 import re
 from icecream import ic
+import pandas as pd
 
 def main():
-    ave_list=[]
+    ave_data_list=[]
+    top3_data_list=[]
+    top3_name_list=[]
     #　ファイル名の読み込み
-    tdhkn_list=get_tdhkn()
-    name_list1 = create_file_name1(tdhkn_list)
+    tdhkn_text=get_tdhkn_text()
+    name_list1 = create_file_name1(tdhkn_text)
 
-    for html_name in name_list1:
-        ave_list.append(extract_ave(html_name))
-        top3_list = create_file_name2(html_name)
-        for top3 in top3_list:
-            extract_ave(top3)
+    for html_name1 in name_list1:
+        top3_ave_list=[]
+        ave_data_list.append(extract_ave(html_name1))
+        top3_name_list.append(extract_top3_name(html_name1))
+        name_list2 = create_file_name2(html_name1)
+        for html_name2 in name_list2:
+             top3_ave_list.append(extract_ave(html_name2))
+        top3_data_list.append(top3_ave_list)
+    # ic(ave_data_list)
+    # ic(top3_data_list)
+    # ic(top3_name_list)
+    data_csv=convert_ave_data(tdhkn_text,ave_data_list,top3_data_list,top3_name_list)
+    save_csv(data_csv)
 
 
-
-
-
-
-
-def get_tdhkn():
+def get_tdhkn_text():
+    tdhkn_lines=[]
     with open(TODOUHUKEN) as f:
-        tdhkn_list = [s.rstrip() for s in f.readlines()]
-    return tdhkn_list
+        lines = [s.rstrip() for s in f.readlines()]
+        for line in lines:
+            tdhkn_lines.append(line)
+    return tdhkn_lines
 
-def create_file_name1(tdhkn_list):
+def create_file_name1(tdhkn_text):
     name_list=[]
-    for line in tdhkn_list:
-        i,tdhkn_kanji,tdhkn = line.split("\t")
-        name_list.append(HTML_PATH+str(i)+"_"+str(tdhkn)+".html")
+    for line in tdhkn_text:
+        i,tdhkn_kanji,tdhkn_yomi = line.split("\t")
+        name_list.append(HTML_PATH+str(i)+"_"+str(tdhkn_yomi)+".html")
     return name_list
 
 def create_file_name2(html_name):
@@ -74,5 +83,109 @@ def extract_ave(html_name):
     else:
         print("mb-xxxsがありません")
     return ave
+
+def extract_top3_name(html_name):
+    name_list = []
+    soup = bs4.BeautifulSoup(open(html_name, encoding='utf-8'), 'html.parser')
+    element = soup.find(attrs={"class": "mt-6"})
+    if element:
+        top3_name = element.find_all("a")
+        # ic(top3_name)
+        if len(top3_name):
+            # 正規表現パターンを修正して全角括弧に対応
+            pattern = r'^(.*?)[（(][^）)]+[）)]$'
+            for name in top3_name:
+                text = name.get_text(strip=True)
+                # ic(repr(text))
+                # 末尾の'(数字+件)'を削除
+                text_without_count = re.sub(r'[（(]\d+件[）)]$', '', text)
+                # ic(repr(text_without_count))
+                print(text_without_count)
+                name_list.append(text_without_count)
+        else:
+            print("aタグがない")
+    else:
+        print("elementがない")
+    return name_list
+
+def convert_ave_data(tdhkn_text,ave_data_list,top3_data_list,top3_name_list):
+    tdhkn_num_list=[]
+    tdhkn_kanji_list=[]
+    tdhkn_yomi_list=[]
+
+    for line in tdhkn_text:
+        tdhkn_num,tdhkn_kanji,tdhkn_yomi = line.split("\t")
+        tdhkn_num_list.append(tdhkn_num)
+        tdhkn_kanji_list.append(tdhkn_kanji)
+        tdhkn_yomi_list.append(tdhkn_yomi)
+
+    ave_ping_list=[]
+    ave_download_list=[]
+    ave_upload_list=[]
+
+    for ave_data in ave_data_list:
+        ave_ping_list.append(ave_data["ave_ping"])
+        ave_download_list.append(ave_data["ave_download"])
+        ave_upload_list.append(ave_data["ave_upload"])
+
+    first_prov_list=[]
+    second_prov_list=[]
+    third_prov_list=[]
+
+    for prov_name in top3_name_list:
+        first_prov_list.append(prov_name[0])
+        second_prov_list.append(prov_name[1])
+        third_prov_list.append(prov_name[2])
+
+
+    first_prov_ping=[]
+    first_prov_download=[]
+    first_prov_upload=[]
+    second_prov_ping=[]
+    second_prov_download=[]
+    second_prov_upload=[]
+    third_prov_ping=[]
+    third_prov_download=[]
+    third_prov_upload=[]
+
+
+    for top3_data in top3_data_list:
+        first_prov_ping.append(top3_data[0]['ave_ping'])
+        first_prov_download.append(top3_data[0]['ave_download'])
+        first_prov_upload.append(top3_data[0]['ave_upload'])
+        second_prov_ping.append(top3_data[1]['ave_ping'])
+        second_prov_download.append(top3_data[1]['ave_download'])
+        second_prov_upload.append(top3_data[1]['ave_upload'])
+        third_prov_ping.append(top3_data[2]['ave_ping'])
+        third_prov_download.append(top3_data[2]['ave_download'])
+        third_prov_upload.append(top3_data[2]['ave_upload'])
+
+
+    df=pd.DataFrame({
+        "tdhkn_number"          :   tdhkn_num_list,
+        "tdhkn_kanji"           :   tdhkn_kanji_list,
+        "tdhkn_yomi"            :   tdhkn_yomi_list,
+        "ave_ping"              :   ave_ping_list,
+        "ave_download"          :   ave_download_list,
+        "ave_upload"            :   ave_upload_list,
+        "first_prov"            :   first_prov_list,
+        "first_prov_ping"       :   first_prov_ping,
+        "first_prov_download"   :   first_prov_download,
+        "first_prov_upload"     :   first_prov_upload,
+        "second_prov"           :   second_prov_list,
+        "second_prov_ping"      :   second_prov_ping,
+        "second_prov_download"  :   second_prov_download,
+        "second_prov_upload"    :   second_prov_upload,
+        "third_prov"            :   third_prov_list,
+        "third_prov_ping"       :   third_prov_ping,
+        "third_prov_download"   :   third_prov_download,
+        "third_prov_upload"     :   third_prov_upload
+        })
+    print(df)
+    return df
+
+
+def save_csv(data):
+    data.to_csv(CSV_PATH+"todouhuken.csv")
 
 main()
