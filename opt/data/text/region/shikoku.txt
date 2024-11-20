@@ -1,0 +1,4 @@
+36	徳島県	tokushima
+37	香川県	kagawa
+38	愛媛県	ehime
+39	高知県	kochi

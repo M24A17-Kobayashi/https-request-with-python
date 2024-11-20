@@ -1,0 +1,9 @@
+15	新潟県	niigata
+16	富山県	toyama
+17	石川県	ishikawa
+18	福井県	fukui
+19	山梨県	yamanashi
+20	長野県	nagano
+21	岐阜県	gifu
+22	静岡県	shizuoka
+23	愛知県	aichi
