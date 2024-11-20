@@ -112,7 +112,6 @@ def convert_ave_data(tdhkn_text,ave_data_list,top3_data_list,top3_name_list):
     tdhkn_num_list=[]
     tdhkn_kanji_list=[]
     tdhkn_yomi_list=[]
-
     for line in tdhkn_text:
         tdhkn_num,tdhkn_kanji,tdhkn_yomi = line.split("\t")
         tdhkn_num_list.append(tdhkn_num)
@@ -122,7 +121,6 @@ def convert_ave_data(tdhkn_text,ave_data_list,top3_data_list,top3_name_list):
     ave_ping_list=[]
     ave_download_list=[]
     ave_upload_list=[]
-
     for ave_data in ave_data_list:
         ave_ping_list.append(ave_data["ave_ping"])
         ave_download_list.append(ave_data["ave_download"])
@@ -131,12 +129,10 @@ def convert_ave_data(tdhkn_text,ave_data_list,top3_data_list,top3_name_list):
     first_prov_list=[]
     second_prov_list=[]
     third_prov_list=[]
-
     for prov_name in top3_name_list:
         first_prov_list.append(prov_name[0])
         second_prov_list.append(prov_name[1])
         third_prov_list.append(prov_name[2])
-
 
     first_prov_ping=[]
     first_prov_download=[]
@@ -147,8 +143,6 @@ def convert_ave_data(tdhkn_text,ave_data_list,top3_data_list,top3_name_list):
     third_prov_ping=[]
     third_prov_download=[]
     third_prov_upload=[]
-
-
     for top3_data in top3_data_list:
         first_prov_ping.append(top3_data[0]['ave_ping'])
         first_prov_download.append(top3_data[0]['ave_download'])

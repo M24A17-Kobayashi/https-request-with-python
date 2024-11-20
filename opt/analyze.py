@@ -55,19 +55,12 @@ def main():
     misc_label = label.pop(misc_index)
     sorted_count_label = sorted(zip(count_list, label), reverse=True)
     sorted_count, sorted_label = zip(*sorted_count_label)
-    ic(sorted_count)
-    ic(misc_data)
     prov_count = list(sorted_count)+[misc_data]
     prov_label = list(sorted_label)+[misc_label]
 
     fig, ax = plt.subplots()
     plt.pie(prov_count, labels=prov_label,autopct="%1.1f%%",startangle=90 ,counterclock=False)
     plt.savefig(IMAGE_PATH+"top3_prov_pie.png")
-
-
-
-
-
 
 
 def calc_region_data(file_name, tdhkn_df):
@@ -92,9 +85,9 @@ def calc_region_data(file_name, tdhkn_df):
         writer.writerow(["max", np.array(ping_list).max(), np.array(download_list).max(), np.array(upload_list).max()])
         writer.writerow(["min", np.array(ping_list).min(), np.array(download_list).min(), np.array(upload_list).min()])
         writer.writerow(["mean", round(np.array(ping_list).mean(),2), round(np.array(download_list).mean(),2) , round(np.array(upload_list).mean(),2)])
+        writer.writerow(["var", round(np.array(ping_list).var(),2), round(np.array(download_list).var(),2) , round(np.array(upload_list).var(),2)])
+        writer.writerow(["std", round(np.array(ping_list).std(),2), round(np.array(download_list).std(),2) , round(np.array(upload_list).std(),2)])
     return ping_list,download_list ,upload_list
-        # fig, ax = plt.subplots()
-        # plt.savefig(IMAGE_PATH+file_name[:-4]+".png")
 
 def count_career(origin_tdhkn_df):
     top3_prov_list = make_all_prov_list(origin_tdhkn_df)
