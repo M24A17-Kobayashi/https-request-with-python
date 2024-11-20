@@ -16,13 +16,6 @@ TODO
 def main():
     origin_tdhkn_df = pd.read_csv(CSV_PATH+'todouhuken.csv')
 
-    career_set = make_all_career_set(origin_tdhkn_df)
-    ntt_set = make_career_set("NTT.txt")
-    kddi_set = make_career_set("KDDI.txt")
-    cableTV_set = make_career_set("CABLETV.txt")
-    origin_line_set = make_career_set("ORIGINAL_LINE.txt")
-
-
     hokkaido_ping, hokkaido_download , hokkaido_upload = calc_region_data("hokkaido.txt",origin_tdhkn_df)
     tohoku_ping, tohoku_download , tohoku_upload = calc_region_data("tohoku.txt",origin_tdhkn_df)
     kanto_ping, kanto_download , kanto_upload = calc_region_data("kanto.txt",origin_tdhkn_df)
@@ -53,6 +46,28 @@ def main():
     ax.set_xticklabels(['hokkaido', 'tohoku', 'kanto', 'chubu', 'kinki', 'chugoku', 'shikoku', 'kyushu'])
     plt.savefig(IMAGE_PATH+"upload_boxplot.png")
 
+    ntt, kddi, cableTV, origin_line, misc = count_career(origin_tdhkn_df)
+    count_list = [ntt, kddi, cableTV, origin_line,misc]
+    label=["ntt", "kddi", "cableTV", "origin_line","misc"]
+
+    misc_index = label.index('misc')
+    misc_data = count_list.pop(misc_index)
+    misc_label = label.pop(misc_index)
+    sorted_count_label = sorted(zip(count_list, label), reverse=True)
+    sorted_count, sorted_label = zip(*sorted_count_label)
+    ic(sorted_count)
+    ic(misc_data)
+    prov_count = list(sorted_count)+[misc_data]
+    prov_label = list(sorted_label)+[misc_label]
+
+    fig, ax = plt.subplots()
+    plt.pie(prov_count, labels=prov_label,autopct="%1.1f%%",startangle=90 ,counterclock=False)
+    plt.savefig(IMAGE_PATH+"top3_prov_pie.png")
+
+
+
+
+
 
 
 def calc_region_data(file_name, tdhkn_df):
@@ -81,18 +96,39 @@ def calc_region_data(file_name, tdhkn_df):
         # fig, ax = plt.subplots()
         # plt.savefig(IMAGE_PATH+file_name[:-4]+".png")
 
-# def drow_boxplot():
+def count_career(origin_tdhkn_df):
+    top3_prov_list = make_all_prov_list(origin_tdhkn_df)
+    ntt_set = make_career_set("NTT.txt")
+    kddi_set = make_career_set("KDDI.txt")
+    cableTV_set = make_career_set("CABLETV.txt")
+    origin_line_set = make_career_set("ORIGINAL_LINE.txt")
 
-def make_all_career_set(origin_tdhkn_df):
-    career_set = set()
+    ntt_count = 0
+    kddi_count = 0
+    cableTV_count = 0
+    origin_line_count = 0
+    misc_count = 0
+
+    for prov in top3_prov_list:
+        if prov in ntt_set:
+            ntt_count += 1
+        elif prov in kddi_set:
+            kddi_count += 1
+        elif prov in cableTV_set:
+            cableTV_count += 1
+        elif prov in origin_line_set:
+            origin_line_count += 1
+        else:
+            misc_count += 1
+    return ntt_count,kddi_count,cableTV_count,origin_line_count, misc_count
+
+def make_all_prov_list(origin_tdhkn_df):
+    prov_list = list()
     for i in range(len(origin_tdhkn_df)):
-        if not origin_tdhkn_df['first_prov'][i] in career_set:
-            career_set.add(origin_tdhkn_df['first_prov'][i])
-        if not origin_tdhkn_df['second_prov'][i] in career_set:
-            career_set.add(origin_tdhkn_df['second_prov'][i])
-        if not origin_tdhkn_df['third_prov'][i] in career_set:
-            career_set.add(origin_tdhkn_df['third_prov'][i])
-    return career_set
+        prov_list.append(origin_tdhkn_df['first_prov'][i])
+        prov_list.append(origin_tdhkn_df['second_prov'][i])
+        prov_list.append(origin_tdhkn_df['third_prov'][i])
+    return prov_list
 
 def make_career_set(file_name):
     career_set = set()
@@ -111,8 +147,14 @@ def make_region_set(file_name):
             region_set.add(tdhkn_yomi)
     return region_set
 
-
-
-
-
+def make_all_prov_set(origin_tdhkn_df):
+    prov_set = set()
+    for i in range(len(origin_tdhkn_df)):
+        if not origin_tdhkn_df['first_prov'][i] in prov_set:
+            prov_set.add(origin_tdhkn_df['first_prov'][i])
+        if not origin_tdhkn_df['second_prov'][i] in prov_set:
+            prov_set.add(origin_tdhkn_df['second_prov'][i])
+        if not origin_tdhkn_df['third_prov'][i] in prov_set:
+            prov_set.add(origin_tdhkn_df['third_prov'][i])
+    return prov_set
 main()
