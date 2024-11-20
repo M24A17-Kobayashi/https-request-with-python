@@ -1,0 +1,7 @@
+8	茨城県	ibaraki
+9	栃木県	tochigi
+10	群馬県	gunma
+11	埼玉県	saitama
+12	千葉県	chiba
+13	東京都	tokyo
+14	神奈川県	kanagawa
