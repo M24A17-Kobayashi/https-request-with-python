@@ -1,0 +1,5 @@
+31	鳥取県	tottori
+32	島根県	shimane
+33	岡山県	okayama
+34	広島県	hiroshima
+35	山口県	yamaguchi

@@ -1,0 +1,6 @@
+2	青森県	aomori
+3	岩手県	iwate
+4	宮城県	miyagi
+5	秋田県	akita
+6	山形県	yamagata
+7	福島県	fukushima
